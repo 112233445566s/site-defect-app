@@ -13,16 +13,7 @@ export const STATUS = {
 export const naturalCompare = (a, b) =>
   String(a ?? '').localeCompare(String(b ?? ''), undefined, { numeric: true, sensitivity: 'base' });
 
-export const sortDefects = (list) => list.sort((a, b) => naturalCompare(a.itemNo, b.itemNo));
-
-export function nextItemNo(defects) {
-  let max = 0;
-  for (const d of defects) {
-    const n = parseInt(d.itemNo, 10);
-    if (!isNaN(n) && n > max) max = n;
-  }
-  return String(max + 1);
-}
+export const sortDefects = (list) => list.sort((a, b) => (a.no || 0) - (b.no || 0) || (a.createdAt || 0) - (b.createdAt || 0));
 
 export function fmtDate(v) {
   if (!v) return '';

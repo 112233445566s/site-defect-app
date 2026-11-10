@@ -188,3 +188,25 @@ textarea.input { resize: vertical; }
   .grid3 { grid-template-columns: 64px 1fr; }
   .grid3 label:last-child { grid-column: 1 / -1; }
 }
+
+/* report types */
+.type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.type-card { text-align: left; border: 2px solid var(--line); background: #fff; border-radius: 12px; padding: 10px; font: inherit; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.type-card b { font-size: 14px; }
+.type-card.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, white); }
+.ref-label { margin-top: -2px; }
+.dthumb { position: relative; }
+.no-badge { position: absolute; left: 4px; top: 4px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: var(--brand); color: #fff; font: 700 12px/22px sans-serif; text-align: center; }
+.slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.slots.single { grid-template-columns: 1fr; }
+.slot { display: flex; flex-direction: column; gap: 4px; }
+.slot-label { font-size: 13px; }
+.slot .thumb { aspect-ratio: 4 / 3; }
+.slots.single .thumb { aspect-ratio: 4 / 3; max-height: 320px; }
+.slot-empty { aspect-ratio: 4 / 3; border: 2px dashed var(--line); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #fafbfc; }
+.slots.single .slot-empty { aspect-ratio: auto; padding: 28px 0; flex-direction: row; }
+.calc-row { display: flex; gap: 18px; font-size: 14px; margin: -2px 0 10px; color: var(--muted); }
+.calc-row b { color: var(--ink); font-size: 16px; }
+.total { text-align: right; margin: 6px 4px; }
+.grid3.dims { grid-template-columns: 1fr 1fr 1fr; }
+@media (max-width: 380px) { .grid3.dims label:last-child { grid-column: auto; } }

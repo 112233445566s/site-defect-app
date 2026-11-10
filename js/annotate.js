@@ -75,7 +75,7 @@ export function drawPins(ctx, defects, box, r) {
   for (const d of defects) {
     if (d.x == null || d.y == null) continue;
     const x = box.x + d.x * box.w, y = box.y + d.y * box.h;
-    const label = String(d.itemNo ?? '');
+    const label = String(d.no ?? '');
     ctx.save();
     ctx.font = `bold ${r * (label.length > 2 ? 0.85 : 1.05)}px ${FONT}`;
     const tw = Math.max(r * 2, ctx.measureText(label).width + r * 0.8);

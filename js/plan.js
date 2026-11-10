@@ -60,7 +60,7 @@ export function planCanvas(plan, defects, { onTap, onPin, marker } = {}) {
       el.style.left = d.x * 100 + '%';
       el.style.top = d.y * 100 + '%';
       el.style.background = STATUS[d.status]?.color;
-      el.textContent = d.itemNo;
+      el.textContent = d.no;
       el.addEventListener('click', (e) => { e.stopPropagation(); onPin?.(d); });
       inner.appendChild(el);
     }
@@ -126,7 +126,7 @@ export async function pickPin(projectId, current) {
         <select class="input" data-plan>${plans.map((p) => `<option value="${p.id}" ${p.id === plan.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
         <button class="btn sm" data-a="out">−</button><button class="btn sm" data-a="in">＋</button>
       </div>
-      <p class="muted small">點擊平面圖設定 defect 位置（★）。可用兩指或 ＋／− 放大。</p>
+      <p class="muted small">點擊平面圖設定位置（★）。可用兩指或 ＋／− 放大。</p>
       <div class="pick-body"></div>
       <div class="row gap">
         ${current?.planId ? '<button class="btn danger ghost" data-a="remove">移除位置</button>' : ''}
@@ -178,9 +178,9 @@ export async function viewPlan(app, projectId, planId, shell) {
         <button class="btn sm" data-a="out">−</button>
         <button class="btn sm" data-a="in">＋</button>
         <span class="grow"></span>
-        <button class="btn sm" data-a="add">＋ 在圖上新增 defect</button>
+        <button class="btn sm" data-a="add">＋ 在圖上新增記錄</button>
       </div>
-      <div class="plan-hint muted small" hidden>點擊平面圖上的位置以新增 defect</div>
+      <div class="plan-hint muted small" hidden>點擊平面圖上的位置以新增記錄</div>
       <div class="plan-host"></div>
       <div class="legend">${Object.values(STATUS).map((s) => `<span><i style="background:${s.color}"></i>${s.zh}</span>`).join('')}</div>`,
   });

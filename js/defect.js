@@ -1,6 +1,7 @@
 // Defect form: photos (before / after) with annotation, location pin, description, status.
 import * as db from './db.js';
-import { esc, uid, objURL, compressImage, busy, toast, modal, pickFiles, nextItemNo, STATUS, fmtDate } from './util.js';
+import { esc, uid, objURL, compressImage, busy, toast, modal, pickFiles, STATUS, fmtDate } from './util.js';
+import { nextNo } from './types.js';
 import { openAnnotator, makeThumb, renderPhoto, photoViewer } from './annotate.js';
 import { pickPin } from './plan.js';
 
@@ -24,7 +25,7 @@ export async function viewDefect(view, projectId, defectId, q, { shell, go }) {
   if (isNew) {
     const last = lastUsed(projectId);
     d = {
-      id: uid(), projectId, itemNo: nextItemNo(defects), area: last.area || '', location: last.location || '',
+      id: uid(), projectId, type: 'defect', no: nextNo(defects), ref: '', area: last.area || '', location: last.location || '',
       planId: q.plan || null, x: q.x != null ? +q.x : null, y: q.y != null ? +q.y : null,
       description: '', category: last.category || '', dueDate: last.dueDate || '', status: 'outstanding',
       before: [], after: [], remarks: '', createdAt: Date.now(), updatedAt: Date.now(),
@@ -43,15 +44,16 @@ export async function viewDefect(view, projectId, defectId, q, { shell, go }) {
   const locs = [...new Set(others.map((x) => x.location).filter(Boolean))];
 
   view.innerHTML = shell({
-    title: isNew ? '新增 Defect' : `Defect #${d.itemNo}`,
+    title: isNew ? `新增 Defect #${d.no}` : `Defect #${d.no}`,
     back: `#/p/${projectId}`,
     body: `
     <form class="form defect-form" autocomplete="off" onsubmit="return false">
       <div class="grid3">
-        <label>Item No.<input class="input" name="itemNo" value="${esc(d.itemNo)}" inputmode="text"></label>
+        <label>Pin No.<input class="input" name="no" type="number" min="1" value="${esc(d.no)}" inputmode="numeric"></label>
         <label>Area<input class="input" name="area" list="dl-area" value="${esc(d.area)}"></label>
         <label>Location<input class="input" name="location" list="dl-loc" value="${esc(d.location)}" placeholder="例如 Pantry"></label>
       </div>
+      <label class="ref-label">Ref.（可選，例如 27a）<input class="input" name="ref" value="${esc(d.ref || '')}"></label>
       <datalist id="dl-area">${areas.map((a) => `<option value="${esc(a)}">`).join('')}</datalist>
       <datalist id="dl-loc">${locs.map((a) => `<option value="${esc(a)}">`).join('')}</datalist>
 
@@ -131,12 +133,13 @@ export async function viewDefect(view, projectId, defectId, q, { shell, go }) {
 
   form.addEventListener('input', (e) => {
     const n = e.target.name;
-    if (n && n in d) { d[n] = e.target.value; schedule(); }
+    if (n && n in d) { d[n] = n === 'no' ? Math.max(1, parseInt(e.target.value, 10) || d.no) : e.target.value; schedule(); }
     if (e.target.classList.contains('phrase-filter')) renderPhrases(e.target.value);
   });
   form.addEventListener('change', (e) => {
     const n = e.target.name;
-    if (n && n in d) { d[n] = e.target.value; schedule(); }
+    if (n === 'no') e.target.value = d.no;
+    else if (n && n in d) { d[n] = e.target.value; schedule(); }
   });
 
   // ---------- status ----------
@@ -257,7 +260,7 @@ export async function viewDefect(view, projectId, defectId, q, { shell, go }) {
         if (k === 'annot') { m.close(); annotate(p); }
         else if (k === 'view') {
           const c = await renderPhoto(p, 2000);
-          c.toBlob((b) => photoViewer(objURL(b), `Defect #${d.itemNo}`), 'image/jpeg', 0.9);
+          c.toBlob((b) => photoViewer(objURL(b), `Defect #${d.no}`), 'image/jpeg', 0.9);
         } else if (k === 'del') {
           if (!confirm('刪除這張相片？')) return;
           d[p.kind] = d[p.kind].filter((id) => id !== p.id);
@@ -276,7 +279,7 @@ export async function viewDefect(view, projectId, defectId, q, { shell, go }) {
       renderPin();
       persist(true);
     } else if (t.dataset.a === 'delete') {
-      if (!confirm(`刪除 Defect #${d.itemNo}？相片會一併刪除，無法復原。`)) return;
+      if (!confirm(`刪除 Defect #${d.no}？相片會一併刪除，無法復原。`)) return;
       await db.deleteDefect(d);
       go(`#/p/${projectId}`);
     } else if (t.dataset.a === 'done') {

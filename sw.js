@@ -1,12 +1,12 @@
 // Offline support: app files are served from cache (refreshed in the background),
 // CDN libraries are cached on first use. Bump VERSION when deploying changes.
-const VERSION = 'v0.1.0';
+const VERSION = 'v0.2.0';
 const SHELL_CACHE = 'shell-' + VERSION;
 const LIB_CACHE = 'libs-v1';
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/db.js', './js/util.js', './js/annotate.js', './js/defect.js',
-  './js/plan.js', './js/export.js', './js/backup.js', './js/libs.js',
+  './js/plan.js', './js/export.js', './js/backup.js', './js/libs.js', './js/types.js', './js/record.js',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png',
 ];
 const CDN_HOSTS = ['cdn.jsdelivr.net', 'cdnjs.cloudflare.com'];

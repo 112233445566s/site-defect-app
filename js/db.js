@@ -1,4 +1,5 @@
 // IndexedDB storage: everything stays on this device.
+import { photoIdsOf } from './types.js';
 const DB_NAME = 'site-defect';
 const DB_VERSION = 1;
 let dbPromise;
@@ -99,6 +100,20 @@ export const DEFAULT_PHRASES = [
   'Temporary notice to be removed',
   'Tape to be removed',
 ];
+export const DEFAULT_CONDITION_PHRASES = [
+  'General view',
+  'Crack on wall',
+  'Crack on wall and water seepage found',
+  'Wall water seepage found',
+  'Wall water seepage and rust found',
+  'Water stain on ceiling',
+  'Spalled concrete found',
+  'Debonded plaster found',
+  'Rusty steel bar exposed',
+  'Peeled-off paint',
+  'Existing damage on floor finishes',
+  'Existing damage on door',
+];
 export const DEFAULT_CATEGORIES = ['General Item', 'Architectural', 'Building Services', 'Safety'];
 
 export async function getSettings() {
@@ -108,6 +123,7 @@ export async function getSettings() {
     companyName: '',
     logo: null,
     phrases: DEFAULT_PHRASES,
+    conditionPhrases: DEFAULT_CONDITION_PHRASES,
     categories: DEFAULT_CATEGORIES,
     ...s,
   };
@@ -121,7 +137,27 @@ export async function projectData(projectId) {
     byProject('plans', projectId),
     byProject('defects', projectId),
   ]);
+  await ensureNumbers(defects);
   return { project, plans, defects };
+}
+
+// Older records used a free-text itemNo; give every record a numeric `no` (1, 2, 3 …)
+// and keep any non-numeric label as `ref`.
+async function ensureNumbers(records) {
+  const missing = records.filter((r) => r.no == null);
+  if (!missing.length) return;
+  const used = new Set(records.filter((r) => r.no != null).map((r) => r.no));
+  missing.sort((a, b) => String(a.itemNo ?? '').localeCompare(String(b.itemNo ?? ''), undefined, { numeric: true }) || a.createdAt - b.createdAt);
+  let next = Math.max(0, ...used) + 1;
+  for (const r of missing) {
+    const n = /^\d+$/.test(String(r.itemNo ?? '')) ? +r.itemNo : null;
+    if (n && !used.has(n)) r.no = n;
+    else { r.no = next; if (r.itemNo) r.ref = String(r.itemNo); }
+    used.add(r.no);
+    next = Math.max(next, r.no + 1);
+    delete r.itemNo;
+  }
+  await putMany('defects', missing);
 }
 
 export async function deleteProject(projectId) {
@@ -133,13 +169,13 @@ export async function deleteProject(projectId) {
 }
 
 export async function deleteDefect(defect) {
-  await delMany('photos', [...(defect.before || []), ...(defect.after || [])]);
+  await delMany('photos', photoIdsOf(defect));
   await del('defects', defect.id);
 }
 
 // Remove photos that no longer belong to a saved defect.
 export async function cleanOrphanPhotos(projectId) {
   const [photos, defects] = await Promise.all([byProject('photos', projectId), byProject('defects', projectId)]);
-  const used = new Set(defects.flatMap((d) => [...(d.before || []), ...(d.after || [])]));
+  const used = new Set(defects.flatMap(photoIdsOf));
   await delMany('photos', photos.filter((p) => !used.has(p.id)).map((p) => p.id));
 }
