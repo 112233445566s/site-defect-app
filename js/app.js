@@ -12,7 +12,7 @@ import { exportProjectBackup, importBackup } from './backup.js';
 import { warmLibs } from './libs.js';
 import { TYPES, typeOf, dimCalc, fmtNum, sizeText } from './types.js';
 
-export const APP_VERSION = '0.2.0';
+export const APP_VERSION = '0.2.1';
 
 // ---------- layout ----------
 function shell({ title, back, actions = '', body, tabs = '' }) {

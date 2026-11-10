@@ -130,7 +130,7 @@ textarea.input { resize: vertical; }
 .plan-scroll { overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; height: calc(100vh - 230px); height: calc(100dvh - 230px); -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
 .plan-inner { position: relative; width: 100%; }
 .plan-inner img { width: 100%; display: block; user-select: none; -webkit-user-select: none; }
-.pin {
+.pin { background: #d93025;
   position: absolute; transform: translate(-50%, -50%); min-width: 26px; height: 26px; padding: 0 6px;
   border-radius: 13px; border: 2px solid #fff; color: #fff; font: 700 12px/22px sans-serif; text-align: center;
   box-shadow: 0 1px 3px rgba(0,0,0,.4); cursor: pointer; z-index: 2;

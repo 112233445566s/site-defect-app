@@ -59,7 +59,7 @@ export function planCanvas(plan, defects, { onTap, onPin, marker } = {}) {
       el.className = 'pin';
       el.style.left = d.x * 100 + '%';
       el.style.top = d.y * 100 + '%';
-      el.style.background = STATUS[d.status]?.color;
+      el.style.background = STATUS[d.status]?.color || STATUS.outstanding.color;
       el.textContent = d.no;
       el.addEventListener('click', (e) => { e.stopPropagation(); onPin?.(d); });
       inner.appendChild(el);
@@ -182,7 +182,7 @@ export async function viewPlan(app, projectId, planId, shell) {
       </div>
       <div class="plan-hint muted small" hidden>點擊平面圖上的位置以新增記錄</div>
       <div class="plan-host"></div>
-      <div class="legend">${Object.values(STATUS).map((s) => `<span><i style="background:${s.color}"></i>${s.zh}</span>`).join('')}</div>`,
+      ${defects.some((d) => d.status) ? `<div class="legend">${Object.values(STATUS).map((s) => `<span><i style="background:${s.color}"></i>${s.zh}</span>`).join('')}</div>` : ''}`,
   });
   const pc = planCanvas(plan, defects, {
     onPin: (d) => { location.hash = `#/p/${projectId}/d/${d.id}`; },

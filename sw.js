@@ -1,6 +1,6 @@
 // Offline support: app files are served from cache (refreshed in the background),
 // CDN libraries are cached on first use. Bump VERSION when deploying changes.
-const VERSION = 'v0.2.0';
+const VERSION = 'v0.2.1';
 const SHELL_CACHE = 'shell-' + VERSION;
 const LIB_CACHE = 'libs-v1';
 const SHELL = [
